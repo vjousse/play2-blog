@@ -3,10 +3,11 @@ package tables
 import slick.driver.JdbcProfile
 
 trait PostTable {
+
   protected val driver: JdbcProfile
   import driver.api._
 
-  class Posts(tag: Tag) extends Table[(Int, String)](tag, "posts") {
+  class Posts(tag: Tag) extends Table[(Int, String)](tag, "blog_blogpost") {
 
     def id = column[Int]("id", O.PrimaryKey)
     def title = column[String]("title")

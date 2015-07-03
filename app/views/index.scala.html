@@ -1,7 +1,10 @@
-@(message: String)
+@(posts: Seq[(Int,String)])
 
 @main("Home") {
-
-    Hop
+<ul>
+@for(post <- posts) {
+    <li>@post._1 — @post._2
+}
+</ul>
 
 }
