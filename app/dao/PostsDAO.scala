@@ -15,7 +15,9 @@ trait PostsComponent { self: HasDatabaseConfig[JdbcProfile] =>
   class Posts(tag: Tag) extends Table[Post](tag, "blog_blogpost") {
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("title")
-    def * = (id, name) <> (Post.tupled, Post.unapply _)
+    def slug = column[String]("slug")
+    def content = column[String]("content")
+    def * = (id, name, slug, content) <> (Post.tupled, Post.unapply _)
   }
 }
 
@@ -38,6 +40,10 @@ class PostsDAO extends PostsComponent with HasDatabaseConfig[JdbcProfile] {
   /** Retrieve a post from the id. */
   def findById(id: Long): Future[Option[Post]] =
     db.run(posts.filter(_.id === id).result.headOption)
+
+  /** Retrieve a post from the slug. */
+  def findBySlug(slug: String): Future[Option[Post]] =
+    db.run(posts.filter(_.slug === slug).result.headOption)
 
   /** Count all posts. */
   def count(): Future[Int] =

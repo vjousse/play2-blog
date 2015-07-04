@@ -13,8 +13,15 @@ class Application extends Controller {
   def postsDao = new PostsDAO
 
   def index = Action.async { implicit request =>
-    val resultingPosts: Future[Seq[Post]] = postsDao.findAll
-    resultingPosts.map(posts => Ok(views.html.index(posts)))
+    postsDao.findAll.map(posts => Ok(views.html.index(posts)))
   }
+
+  def post(slug: String) = Action.async { implicit request =>
+    postsDao.findBySlug(slug).map(_ match {
+      case Some(post) => Ok(views.html.post(post))
+      case None => NotFound
+    })
+  }
+
 
 }
