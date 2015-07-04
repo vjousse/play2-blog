@@ -1,5 +1,6 @@
 package models
 import java.sql.Timestamp
+import com.github.rjeschke.txtmark
 
 case class Post(
   id: Long,
@@ -7,4 +8,7 @@ case class Post(
   slug: String,
   content: String,
   publishDate: Timestamp
-)
+) {
+
+  lazy val html = txtmark.Processor.process(content)
+}
