@@ -3,7 +3,7 @@
 @main("Home") {
 <ul>
 @for(post <- posts) {
-<li>@post.id — <a href="@routes.Application.post(post.slug)">@post.title</a>
+<li>@post.publishDate | <a href="@routes.Application.post(post.slug)">@post.title</a>
 }
 </ul>
 

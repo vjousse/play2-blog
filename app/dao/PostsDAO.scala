@@ -8,6 +8,7 @@ import play.api.db.slick.DatabaseConfigProvider
 import play.api.db.slick.HasDatabaseConfig
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.driver.JdbcProfile
+import java.sql.Timestamp
 
 trait PostsComponent { self: HasDatabaseConfig[JdbcProfile] =>
   import driver.api._
@@ -17,7 +18,8 @@ trait PostsComponent { self: HasDatabaseConfig[JdbcProfile] =>
     def name = column[String]("title")
     def slug = column[String]("slug")
     def content = column[String]("content")
-    def * = (id, name, slug, content) <> (Post.tupled, Post.unapply _)
+    def publishDate = column[Timestamp]("publish_date")
+    def * = (id, name, slug, content, publishDate) <> (Post.tupled, Post.unapply _)
   }
 }
 
@@ -50,6 +52,6 @@ class PostsDAO extends PostsComponent with HasDatabaseConfig[JdbcProfile] {
     db.run(posts.length.result)
 
   /** Get all posts */
-  def findAll(): Future[Seq[Post]] = db.run(posts.result)
-
+  def findAll(): Future[Seq[Post]] =
+    db.run(posts.sortBy(_.publishDate.desc).result)
 }
