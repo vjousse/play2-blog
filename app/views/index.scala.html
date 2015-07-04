@@ -1,9 +1,9 @@
-@(posts: Seq[(Int,String)])
+@(posts: Seq[models.Post])
 
 @main("Home") {
 <ul>
 @for(post <- posts) {
-    <li>@post._1 — @post._2
+    <li>@post.id — @post.title
 }
 </ul>
 

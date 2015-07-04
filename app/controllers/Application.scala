@@ -2,22 +2,18 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import play.api.db.slick.DatabaseConfigProvider
-import slick.driver.JdbcProfile
-import play.api.db.slick.HasDatabaseConfig
-import tables.PostTable
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class Application extends Controller with PostTable with HasDatabaseConfig[JdbcProfile] {
+import dao.PostsDAO
+import models.Post
 
-  val dbConfig = DatabaseConfigProvider.get[JdbcProfile](Play.current)
+class Application extends Controller {
 
-  import dbConfig.driver.api._
+  def postsDao = new PostsDAO
 
   def index = Action.async { implicit request =>
-    val posts = TableQuery[Posts]
-    val resultingPosts: Future[Seq[(Int, String)]] = dbConfig.db.run(posts.result)
+    val resultingPosts: Future[Seq[Post]] = postsDao.findAll
     resultingPosts.map(posts => Ok(views.html.index(posts)))
   }
 
