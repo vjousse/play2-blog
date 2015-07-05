@@ -1,0 +1,2 @@
+@(date: java.sql.Timestamp)(implicit lang: play.api.i18n.Lang)
+@((new org.joda.time.DateTime(date)).toString("dd MMM yyyy", lang.toLocale))

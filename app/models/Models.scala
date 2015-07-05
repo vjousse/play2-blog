@@ -1,7 +1,7 @@
 package models
 import java.sql.Timestamp
 import com.github.rjeschke.txtmark
-import java.util.{ Calendar, GregorianCalendar }
+import org.joda.time.DateTime
 
 case class Post(
   id: Long,
@@ -13,16 +13,7 @@ case class Post(
 
   lazy val html = txtmark.Processor.process(content)
 
-  lazy val month: Int = {
-    var cal = new GregorianCalendar()
-    cal.setTime(publishDate)
-    cal.get(Calendar.MONTH)
-  }
+  lazy val month: Int = new DateTime(publishDate).getMonthOfYear()
 
-
-  lazy val year: Int = {
-    var cal = new GregorianCalendar()
-    cal.setTime(publishDate)
-    cal.get(Calendar.YEAR)
-  }
+  lazy val year: Int = new DateTime(publishDate).getYear()
 }

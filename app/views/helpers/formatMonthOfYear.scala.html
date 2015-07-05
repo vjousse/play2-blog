@@ -1,0 +1,2 @@
+@(date: org.joda.time.DateTime)(implicit lang: play.api.i18n.Lang)
+@((new org.joda.time.DateTime(date)).toString("MMMM yyyy", lang.toLocale))

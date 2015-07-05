@@ -10,6 +10,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.driver.JdbcProfile
 import java.sql.Timestamp
 import collection.immutable.SortedMap
+import org.joda.time.DateTime
 
 trait PostsComponent { self: HasDatabaseConfig[JdbcProfile] =>
   import driver.api._
@@ -57,11 +58,15 @@ class PostsDAO extends PostsComponent with HasDatabaseConfig[JdbcProfile] {
     db.run(posts.sortBy(_.publishDate.desc).result)
 
   /** Get all posts */
-  def findAllGroupedByMonth(): Future[Map[String, Seq[Post]]] =
+  def findAllGroupedByMonth(): Future[Map[DateTime, Seq[Post]]] = {
+
+    implicit def dateTimeOrdering: Ordering[DateTime] = Ordering.fromLessThan(_ isBefore _)
+
     db.run(posts.sortBy(_.publishDate.desc).result).map { r =>
       SortedMap(r.groupBy(p => {
-        "%02d%02d".format(p.year,p.month)
-      }).toSeq:_*)(Ordering[String].reverse)
+        new DateTime(p.year, p.month, 1, 0, 0)
+      }).toSeq:_*)(Ordering[DateTime].reverse)
     }
+  }
 
 }
