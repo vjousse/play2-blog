@@ -13,7 +13,7 @@ class Application extends Controller {
   def postsDao = new PostsDAO
 
   def index = Action.async { implicit request =>
-    postsDao.findAll.map(posts => Ok(views.html.index(posts)))
+    postsDao.findAllGroupedByMonth.map(posts => Ok(views.html.index(posts)))
   }
 
   def post(slug: String) = Action.async { implicit request =>

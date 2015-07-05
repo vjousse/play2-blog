@@ -9,6 +9,7 @@ import play.api.db.slick.HasDatabaseConfig
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import slick.driver.JdbcProfile
 import java.sql.Timestamp
+import collection.immutable.SortedMap
 
 trait PostsComponent { self: HasDatabaseConfig[JdbcProfile] =>
   import driver.api._
@@ -54,4 +55,13 @@ class PostsDAO extends PostsComponent with HasDatabaseConfig[JdbcProfile] {
   /** Get all posts */
   def findAll(): Future[Seq[Post]] =
     db.run(posts.sortBy(_.publishDate.desc).result)
+
+  /** Get all posts */
+  def findAllGroupedByMonth(): Future[Map[String, Seq[Post]]] =
+    db.run(posts.sortBy(_.publishDate.desc).result).map { r =>
+      SortedMap(r.groupBy(p => {
+        "%02d%02d".format(p.year,p.month)
+      }).toSeq:_*)(Ordering[String].reverse)
+    }
+
 }
