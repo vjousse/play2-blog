@@ -2,7 +2,7 @@ package dao
 
 import scala.concurrent.Future
 
-import models.Post
+import models.{ Category, Post }
 import play.api.Play
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.db.slick.HasDatabaseConfig
@@ -26,12 +26,14 @@ trait PostsComponent { self: HasDatabaseConfig[JdbcProfile] =>
 }
 
 
-class PostsDAO extends PostsComponent with HasDatabaseConfig[JdbcProfile] {
+class PostsDAO extends PostsComponent with CategoriesComponent with HasDatabaseConfig[JdbcProfile] {
   protected val dbConfig =  DatabaseConfigProvider.get[JdbcProfile](Play.current)
 
   import driver.api._
 
-  val posts = TableQuery[Posts]
+  private val posts = TableQuery[Posts]
+  private val categories = TableQuery[Categories]
+  private val postCategories = TableQuery[PostCategories]
 
   /** Insert a new post */
   def insert(post: Post): Future[Unit] =
@@ -48,6 +50,16 @@ class PostsDAO extends PostsComponent with HasDatabaseConfig[JdbcProfile] {
   /** Retrieve a post from the slug. */
   def findBySlug(slug: String): Future[Option[Post]] =
     db.run(posts.filter(_.slug === slug).result.headOption)
+
+  /** Retrieve a post from the slug. */
+  /**
+  def findBySlugJoined(slug: String): Future[Seq[(Post, Option[Category])]] = {
+    val query = for {
+      ((p, pc), c) <- posts joinLeft postCategories on (_.id === _.postId) joinLeft categories on (_._2.map(_.categoryId) === _.id)
+    } yield (p, c)
+    query.result
+  }
+  **/
 
   /** Count all posts. */
   def count(): Future[Int] =

@@ -17,3 +17,15 @@ case class Post(
 
   lazy val year: Int = new DateTime(publishDate).getYear()
 }
+
+case class Category(
+  id: Long,
+  title: String,
+  slug: String
+)
+
+case class PostCategory(
+  id: Long,
+  postId: Long,
+  categoryId: Long
+)
