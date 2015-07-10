@@ -1,14 +1,16 @@
 @(monthsWithPosts: Map[org.joda.time.DateTime, Seq[models.Post]])(implicit lang: Lang)
 
-@main("Home") {
+@main("Blog | Viser la lune") {
+<div class="post-list">
     <h1>Tous les articles</h1>
     @monthsWithPosts.map{ case (month, posts) =>
-    <h2>@helpers.formatMonthOfYear(month)</h2>
+    <h3>@helpers.formatMonthOfYear(month)</h3>
     <ul>
         @for(post <- posts) {
-        <li>@helpers.formatDate(post.publishDate) | <a href="@routes.Application.post(post.slug)">@post.title</a></li>
+        <li><a href="@routes.Application.post(post.slug)">@post.title</a></li>
         }
     </ul>
     }
+</div>
 
 }
