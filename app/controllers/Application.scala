@@ -17,6 +17,7 @@ class Application extends Controller {
   }
 
   def post(slug: String) = Action.async { implicit request =>
+    val test = postsDao.findBySlugJoined(slug)
     postsDao.findBySlug(slug).map(_ match {
       case Some(post) => Ok(views.html.post(post))
       case None => NotFound

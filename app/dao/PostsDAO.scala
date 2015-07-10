@@ -52,14 +52,30 @@ class PostsDAO extends PostsComponent with CategoriesComponent with HasDatabaseC
     db.run(posts.filter(_.slug === slug).result.headOption)
 
   /** Retrieve a post from the slug. */
-  /**
-  def findBySlugJoined(slug: String): Future[Seq[(Post, Option[Category])]] = {
+
+  def findBySlugJoined(slug: String): Future[Option[(Post, List[Category])]] = {
     val query = for {
-      ((p, pc), c) <- posts joinLeft postCategories on (_.id === _.postId) joinLeft categories on (_._2.map(_.categoryId) === _.id)
+      ((p, pc), c) <- posts.filter(_.slug === slug) joinLeft postCategories on (_.id === _.postId) joinLeft categories on (_._2.map(_.categoryId) === _.id)
     } yield (p, c)
-    query.result
+
+    val results: Future[Seq[(Post, Option[Category])]] = db.run(query.result)
+
+    val result = results.map { f =>
+
+      val categories: List[Category] = f.flatMap { case (p, o) =>
+        o
+      }.toList
+
+
+      val post: Option[(Post, List[Category])] = f match {
+        case Seq() => None
+        case x :: xs => Some((x._1, categories))
+      }
+      post
+    }
+
+    result
   }
-  **/
 
   /** Count all posts. */
   def count(): Future[Int] =
